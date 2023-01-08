@@ -5,36 +5,34 @@ const mimeType = "audio/webm";
 const AudioRecorder = () => {
 	const [permission, setPermission] = useState(false);
 
+	const mediaRecorder = useRef(null);
+
+	const [recordingStatus, setRecordingStatus] = useState("inactive");
+
 	const [stream, setStream] = useState(null);
 
 	const [audio, setAudio] = useState(null);
 
 	const [audioChunks, setAudioChunks] = useState([]);
 
-	const mediaRecorder = useRef(null);
-
-	const [recordingStatus, setRecordingStatus] = useState("inactive");
-
 	const getMicrophonePermission = async () => {
 		if ("MediaRecorder" in window) {
 			try {
-				const streamData = await navigator.mediaDevices.getUserMedia({
+				const mediaStream = await navigator.mediaDevices.getUserMedia({
 					audio: true,
 					video: false,
 				});
 				setPermission(true);
-				setStream(streamData);
-			} catch {
-				alert(
-					"You denied access to the microphone so this demo will not work."
-				);
+				setStream(mediaStream);
+			} catch (err) {
+				alert(err.message);
 			}
 		} else {
 			alert("The MediaRecorder API is not supported in your browser.");
 		}
 	};
 
-	const recordAudio = async () => {
+	const startRecording = async () => {
 		setRecordingStatus("recording");
 		const media = new MediaRecorder(stream, { type: mimeType });
 
@@ -53,7 +51,7 @@ const AudioRecorder = () => {
 		setAudioChunks(localAudioChunks);
 	};
 
-	const stop = () => {
+	const stopRecording = () => {
 		setRecordingStatus("inactive");
 		mediaRecorder.current.stop();
 
@@ -72,30 +70,30 @@ const AudioRecorder = () => {
 			<h2>Audio Recorder</h2>
 			<main>
 				<div className="audio-controls">
-					{!permission && (
+					{!permission ? (
 						<button onClick={getMicrophonePermission} type="button">
 							Get Microphone
 						</button>
-					)}
-					{permission && recordingStatus == "inactive" && (
-						<button onClick={recordAudio} type="button">
-							Record
+					) : null}
+					{permission && recordingStatus === "inactive" ? (
+						<button onClick={startRecording} type="button">
+							Start Recording
 						</button>
-					)}
-					{recordingStatus === "recording" && (
-						<button onClick={stop} type="button">
-							Stop
+					) : null}
+					{recordingStatus === "recording" ? (
+						<button onClick={stopRecording} type="button">
+							Stop Recording
 						</button>
-					)}
+					) : null}
 				</div>
-				{audio && (
-					<div className="audio-container">
+				{audio ? (
+					<div className="audio-player">
 						<audio src={audio} controls></audio>
 						<a download href={audio}>
 							Download Recording
 						</a>
 					</div>
-				)}
+				) : null}
 			</main>
 		</div>
 	);
