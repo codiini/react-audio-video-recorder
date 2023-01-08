@@ -63,14 +63,28 @@ button:focus-visible {
 	gap: 10px;
 }
 
-.audio-controls {
+.audio-controls,
+.video-controls {
 	margin-bottom: 20px;
 }
 
-.audio-container {
+.audio-player,
+.video-player,
+.recorded-player {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+}
+
+.live-player {
+	height: 200px;
+	width: 400px;
+	border: 1px solid #646cff;
+	margin-bottom: 30px;
+}
+.recorded-player video {
+	height: 400px;
+	width: 800px;
 }
 
 */ @media (prefers-color-scheme: light) {
